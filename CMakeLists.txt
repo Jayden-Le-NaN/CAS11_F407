@@ -34,6 +34,7 @@ enable_language(C ASM)
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
+
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
@@ -45,10 +46,13 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
+set(APP_SRC_DIR ${PROJECT_SOURCE_DIR}/App/Src)
+file(GLOB APP_SRC_FILES "${APP_SRC_DIR}/*.c")
+
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
-    ${PROJECT_SOURCE_DIR}/App/Src/ad9833.c
+    ${APP_SRC_FILES}
 )
 
 # Add include paths
