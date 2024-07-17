@@ -1,5 +1,7 @@
 #include "ad9833.h"
 
+extern UART_HandleTypeDef huart1;
+
 static SPI_HandleTypeDef* ad9833_spi;
 // static DMA_HandleTypeDef* ad9833_dma_spi_tx;
 // static DMA_HandleTypeDef ad9833_dma_spi_rx;
@@ -16,17 +18,17 @@ void AD9833_Init(SPI_HandleTypeDef* hspi) {
     //------------------------------初始化gpio------------------------------
 
     //时钟使能
-    UTILS_RCC_GPIO_Enable(AD9833_CS_GPIO_TYPE);
+    UTILS_RCC_GPIO_Enable(AD9833_FSYN_GPIO_TYPE);
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     // 初始设置为高电平
-    HAL_GPIO_WritePin(AD9833_CS_GPIO_TYPE, AD9833_CS_GPIO_PIN, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(AD9833_FSYN_GPIO_TYPE, AD9833_FSYN_GPIO_PIN, GPIO_PIN_SET);
 
     // 配置GPIO
-    GPIO_InitStruct.Pin = AD9833_CS_GPIO_PIN;
+    GPIO_InitStruct.Pin = AD9833_FSYN_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(AD9833_CS_GPIO_TYPE, &GPIO_InitStruct);
+    HAL_GPIO_Init(AD9833_FSYN_GPIO_TYPE, &GPIO_InitStruct);
 
     //------------------------------挂载spi------------------------------
     ad9833_spi = hspi;    
@@ -42,9 +44,10 @@ void AD9833_WriteData(uint16_t tx_data) {
     uint8_t data[2];
     data[0] = (uint8_t)((tx_data >> 8) & 0xFF);
     data[1] = (uint8_t)(tx_data & 0xFF);
-    AD9833_CS_Enable();
-    HAL_SPI_Transmit_DMA(ad9833_spi, data, sizeof(data));
-    AD9833_CS_Disable();
+    AD9833_FSYN_Enable();
+    // HAL_SPI_Transmit_DMA(ad9833_spi, data, sizeof(data));
+    HAL_SPI_Transmit(ad9833_spi, data, sizeof(data), 0xFF);
+    AD9833_FSYN_Disable();
 }
 
 
@@ -53,13 +56,14 @@ void AD9833_WriteData(uint16_t tx_data) {
  * @param reg           需要设置的频率寄存器
  * @param val           需要设置的频率
  * @return              无
- */
-void AD9833_SetFrequency(uint16_t reg, double val) {
+ */ void AD9833_SetFrequency(uint16_t reg, double val) {
     uint16_t freq_high = reg;
     uint16_t freq_low = reg;
-    uint32_t freq = (uint32_t)(val * ad9833_freq_scale_factor);
-    freq_high |= (freq & 0xFFFC000) >> 14;
+    uint32_t freq = val * ad9833_freq_scale_factor;
+
     freq_low |= (freq & 0x3FFF);
+    freq_high |= ((freq >> 14) & 0x3FFF);
+
     AD9833_WriteData(AD9833_RESET | AD9833_B28);
     AD9833_WriteData(freq_low);
     AD9833_WriteData(freq_high);
@@ -86,7 +90,8 @@ void AD9833_SetPhase(uint16_t reg, uint16_t val) {
  * @return              无
  */
 void AD9833_SetWave(uint16_t wave_mode, uint16_t freq_sfr, uint16_t phase_sfr) {
-    uint16_t val = (wave_mode | freq_sfr | phase_sfr);
+    uint16_t val = 0;
+    val = (val | wave_mode | freq_sfr | phase_sfr);
     AD9833_WriteData(val);
 }
 
@@ -99,7 +104,7 @@ void AD9833_SetWave(uint16_t wave_mode, uint16_t freq_sfr, uint16_t phase_sfr) {
  * @param wave_mode     设置的波形输出模式
  * @return              无
  */
-void AD9833_Setup(uint16_t freq_reg, double freq_val, uint16_t phase_reg, uint16_t phase_val,uint16_t wave_mode) {
+void AD9833_Setup(uint16_t freq_reg, double freq_val, uint16_t phase_reg, uint16_t phase_val, uint16_t wave_mode) {
 
     uint16_t freq_sfr = (freq_reg == AD9833_REG_FREQ0 ? AD9833_FSEL0 : AD9833_FSEL1);
     uint16_t phase_sfr = (phase_reg == AD9833_REG_PHASE0 ? AD9833_PSEL0 : AD9833_PSEL1);

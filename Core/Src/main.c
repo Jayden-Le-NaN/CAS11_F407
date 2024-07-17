@@ -102,6 +102,11 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
+  AD9833_Init(&hspi1);
+  AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
+  AD9833_SetPhase(AD9833_REG_PHASE0, 0);
+  AD9833_SetWave(AD9833_OUT_TRIANGLE, AD9833_FSEL0, AD9833_PSEL0);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -109,7 +114,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+    AD9833_SetWave(AD9833_OUT_SINUS, AD9833_FSEL0, AD9833_PSEL0);
+    HAL_Delay(1000);
+    AD9833_SetWave(AD9833_OUT_MSB, AD9833_FSEL0, AD9833_PSEL0);
+    HAL_Delay(1000);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -184,7 +192,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Mode = SPI_MODE_MASTER;
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;

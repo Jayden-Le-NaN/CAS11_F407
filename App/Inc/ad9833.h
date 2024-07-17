@@ -1,14 +1,13 @@
 #ifndef AD9833_H_
 #define AD9833_H_
-#include "headfiles.h"
 #include "utils.h"
 
 
 #define AD9833_FCLK         25000000                                    // AD9833 时钟频率(单位HZ)
 
 // AD9833 片选引脚
-#define AD9833_CS_GPIO_PIN   GPIO_PIN_10
-#define AD9833_CS_GPIO_TYPE  GPIOA
+#define AD9833_FSYN_GPIO_PIN   GPIO_PIN_7
+#define AD9833_FSYN_GPIO_TYPE  GPIOC
 
 // AD9833 波形模式
 #define AD9833_OUT_SINUS    ((0 << 5) | (0 << 1) | (0 << 3))            // sin wave
@@ -43,16 +42,14 @@
 
 
 //------------------------------外接函数------------------------------
-#define AD9833_CS_Enable()      HAL_GPIO_WritePin(AD9833_CS_GPIO_TYPE, AD9833_CS_GPIO_PIN, GPIO_PIN_RESET)
-#define AD9833_CS_Disable()     HAL_GPIO_WritePin(AD9833_CS_GPIO_TYPE, AD9833_CS_GPIO_PIN, GPIO_PIN_SET)
+#define AD9833_FSYN_Enable()      HAL_GPIO_WritePin(AD9833_FSYN_GPIO_TYPE, AD9833_FSYN_GPIO_PIN, GPIO_PIN_RESET)
+#define AD9833_FSYN_Disable()     HAL_GPIO_WritePin(AD9833_FSYN_GPIO_TYPE, AD9833_FSYN_GPIO_PIN, GPIO_PIN_SET)
 
 void AD9833_Init(SPI_HandleTypeDef* hspi);
 void AD9833_WriteData(uint16_t tx_data);
 void AD9833_SetFrequency(uint16_t reg, double val);
 void AD9833_SetPhase(uint16_t reg, uint16_t val);
-
 void AD9833_SetWave(uint16_t wave_mode, uint16_t freq_sfr, uint16_t phase_sfr);
-
 void AD9833_Setup(uint16_t freq_reg, double freq_val, uint16_t phase_reg, uint16_t phase_val,uint16_t wave_mode);
 
 #endif
