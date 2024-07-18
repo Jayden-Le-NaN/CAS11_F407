@@ -1,10 +1,8 @@
 #include "ad9833.h"
 
-extern UART_HandleTypeDef huart1;
-
 static SPI_HandleTypeDef* ad9833_spi;
 // static DMA_HandleTypeDef* ad9833_dma_spi_tx;
-// static DMA_HandleTypeDef ad9833_dma_spi_rx;
+
 // 频率比例因子
 static const double ad9833_freq_scale_factor = 268435456.0 / AD9833_FCLK;
 
@@ -45,7 +43,7 @@ void AD9833_WriteData(uint16_t tx_data) {
     data[0] = (uint8_t)((tx_data >> 8) & 0xFF);
     data[1] = (uint8_t)(tx_data & 0xFF);
     AD9833_FSYN_Enable();
-    // HAL_SPI_Transmit_DMA(ad9833_spi, data, sizeof(data));
+    // HAL_SPI_Transmit_DMA(ad9833_spi, data, sizeof(data));            //TODO: 完成DMA功能的实现
     HAL_SPI_Transmit(ad9833_spi, data, sizeof(data), 0xFF);
     AD9833_FSYN_Disable();
 }
@@ -56,7 +54,8 @@ void AD9833_WriteData(uint16_t tx_data) {
  * @param reg           需要设置的频率寄存器
  * @param val           需要设置的频率
  * @return              无
- */ void AD9833_SetFrequency(uint16_t reg, double val) {
+ */ 
+void AD9833_SetFrequency(uint16_t reg, double val) {
     uint16_t freq_high = reg;
     uint16_t freq_low = reg;
     uint32_t freq = val * ad9833_freq_scale_factor;

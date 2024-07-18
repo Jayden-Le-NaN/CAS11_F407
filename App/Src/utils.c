@@ -20,6 +20,33 @@ UTILS_Status UTILS_RCC_GPIO_Enable(GPIO_TypeDef* GPIOx) {
     else
         status = UTILS_ERROR;
 
-
     return status;
+}
+
+/*
+ * @brief               以微秒级延时
+ * @param delay         延时的时间
+ * @return              无
+ */
+void UTILS_Delay_us(__IO uint32_t delay) {
+    // 系统嘀嗒定时器计完一次数是1ms
+    int32_t last, curr, val;
+    int32_t tmp;
+    while (delay != 0) {
+        tmp = delay > 900 ? 900 : delay;
+        last = SysTick->VAL;
+        curr = last - MCU_FREQUENCY_MHZ * tmp;
+        if (curr >= 0) {
+            do {
+                val = SysTick->VAL;
+            }while((val < last) && (val >= curr));
+        }
+        else {
+            curr += MCU_FREQUENCY_MHZ * 1000;
+            do {
+                val = SysTick->VAL;
+            }while((val <= last) || (val) > curr);
+        }
+        delay -= tmp;
+    }
 }

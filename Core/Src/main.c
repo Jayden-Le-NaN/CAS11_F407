@@ -102,10 +102,22 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
-  AD9833_Init(&hspi1);
-  AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
-  AD9833_SetPhase(AD9833_REG_PHASE0, 0);
-  AD9833_SetWave(AD9833_OUT_TRIANGLE, AD9833_FSEL0, AD9833_PSEL0);
+    //------------------------------AD9833历程------------------------------
+    // AD9833_Init(&hspi1);
+    // AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
+    // AD9833_SetPhase(AD9833_REG_PHASE0, 0);
+    // AD9833_SetWave(AD9833_OUT_TRIANGLE, AD9833_FSEL0, AD9833_PSEL0);
+
+    //------------------------------w25qxx历程------------------------------
+    // W25QXX_Init(&hspi1);
+    // uint8_t buf[] = "homo ahhhh !!!!!";
+    // W25QXX_Write(buf, 0x1145, sizeof(buf));
+    // uint8_t rx_buf[sizeof(buf)];
+    // W25QXX_Read(rx_buf, 0x1145, sizeof(rx_buf));
+
+    // W25QXX_Read(rx_buf, 0x1145, sizeof(rx_buf));
+    // HAL_UART_Transmit(&huart1, rx_buf, sizeof(rx_buf), 0x00FF);
+    // HAL_Delay(200);
 
   /* USER CODE END 2 */
 
@@ -114,11 +126,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    AD9833_SetWave(AD9833_OUT_SINUS, AD9833_FSEL0, AD9833_PSEL0);
-    HAL_Delay(1000);
-    AD9833_SetWave(AD9833_OUT_MSB, AD9833_FSEL0, AD9833_PSEL0);
-    HAL_Delay(1000);
+
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -193,7 +203,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -291,12 +301,12 @@ static void MX_DMA_Init(void)
   __HAL_RCC_DMA2_CLK_ENABLE();
 
   /* DMA interrupt init */
-  /* DMA2_Stream0_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream0_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream0_IRQn);
-  /* DMA2_Stream3_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA2_Stream3_IRQn, 5, 0);
-  HAL_NVIC_EnableIRQ(DMA2_Stream3_IRQn);
+  /* DMA2_Stream2_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream2_IRQn);
+  /* DMA2_Stream5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA2_Stream5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA2_Stream5_IRQn);
 
 }
 
@@ -307,6 +317,7 @@ static void MX_DMA_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -315,6 +326,16 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_7, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : PC7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

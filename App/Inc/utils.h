@@ -8,6 +8,8 @@
 #define MCU_STM32F4XX
 // #define MCU_STM32L4XX
 
+#define MCU_FREQUENCY_MHZ       168         // STM32 系统时钟主频
+
 //------------------------------HAL库文件------------------------------
 #include "stm32f4xx.h"
 
@@ -18,5 +20,6 @@ typedef enum {
 
 //------------------------------常用工具包------------------------------
 UTILS_Status UTILS_RCC_GPIO_Enable(GPIO_TypeDef* GPIOx);
+void UTILS_Delay_us(uint32_t us);
 
 #endif
