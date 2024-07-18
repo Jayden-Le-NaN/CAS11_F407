@@ -1,5 +1,25 @@
 #include "utils.h"
 
+//------------------------------重定向printf------------------------------
+extern UART_HandleTypeDef huart1;
+
+void printf(const char *format, ...)
+{
+    char buffer[PRINT_BUFFER_SIZE];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(buffer, PRINT_BUFFER_SIZE, format, args);
+    va_end(args);
+
+    HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+/*
+ * @brief               使能GPIO的时钟
+ * @param GPIOx         GPIO的类型
+ * @return              UTILS_OK: 没问题
+ *                      UTILS_ERROR: 时钟类型传输错误
+ */
 UTILS_Status UTILS_RCC_GPIO_Enable(GPIO_TypeDef* GPIOx) {
     UTILS_Status status = UTILS_OK;
 

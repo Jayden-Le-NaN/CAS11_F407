@@ -9,8 +9,12 @@
 // #define MCU_STM32L4XX
 
 #define MCU_FREQUENCY_MHZ       168         // STM32 系统时钟主频
+#define PRINT_BUFFER_SIZE       256         // printf 的缓冲区大小
 
-//------------------------------HAL库文件------------------------------
+//------------------------------标准库------------------------------
+#include "stdarg.h"
+
+//------------------------------HAL库------------------------------
 #include "stm32f4xx.h"
 
 typedef enum {
@@ -21,5 +25,6 @@ typedef enum {
 //------------------------------常用工具包------------------------------
 UTILS_Status UTILS_RCC_GPIO_Enable(GPIO_TypeDef* GPIOx);
 void UTILS_Delay_us(uint32_t us);
+void printf(const char *format, ...);
 
 #endif
