@@ -3,7 +3,7 @@
 
 #include "utils.h"
 
-// W25Q128 片选引脚
+// W25QXX 片选引脚
 #define W25QXX_CS_GPIO_PIN      GPIO_PIN_14
 #define W25QXX_CS_GPIO_TYPE     GPIOB
 

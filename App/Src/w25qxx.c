@@ -3,8 +3,6 @@
 uint16_t W25QXX_TYPE = W25Q80;              // 芯片的型号
 uint8_t w25qxx_buffer[4096];                // 数据缓冲区
 static SPI_HandleTypeDef* w25qxx_spi;       // 挂载的spi
-uint8_t debug_buf[] = "Test";
-extern UART_HandleTypeDef huart1;
 
 
 /*
@@ -39,7 +37,7 @@ static UTILS_Status W25QXX_ReceiveByte(uint8_t* rx_data) {
  * @param rx_data       需要接收数据的地址
  * @return              传输状态:   UTILS_Ok - 没有问题
  *                                  UTILS_ERROR - 有问题
- */
+ */ 
 static UTILS_Status W25QXX_TransmitReceiveByte(uint8_t tx_data, uint8_t* rx_data) {
     UTILS_Status status = UTILS_OK;
     status = W25QXX_TransmitByte(tx_data);
@@ -63,7 +61,7 @@ void W25QXX_Init(SPI_HandleTypeDef* hspi) {
     GPIO_InitStruct.Pin = W25QXX_CS_GPIO_PIN;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(W25QXX_CS_GPIO_TYPE, &GPIO_InitStruct);
     
     //------------------------------获取指定spi的芯片信息------------------------------

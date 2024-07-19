@@ -103,10 +103,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
     //------------------------------AD9833历程------------------------------
-    // AD9833_Init(&hspi1);
-    // AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
-    // AD9833_SetPhase(AD9833_REG_PHASE0, 0);
-    // AD9833_SetWave(AD9833_OUT_TRIANGLE, AD9833_FSEL0, AD9833_PSEL0);
+    AD9833_Init(&hspi1);
+    AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
+    AD9833_SetPhase(AD9833_REG_PHASE0, 0);
+    AD9833_SetWave(AD9833_OUT_SINUS, AD9833_FSEL0, AD9833_PSEL0);
 
     //------------------------------w25qxx历程------------------------------
     // W25QXX_Init(&hspi1);
@@ -126,8 +126,8 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
-      printf("Hello BUPT\n");
         HAL_Delay(100);
   }
   /* USER CODE END 3 */
@@ -203,7 +203,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.Direction = SPI_DIRECTION_2LINES;
   hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
   hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
-  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
   hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
