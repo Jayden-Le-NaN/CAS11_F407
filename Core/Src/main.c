@@ -103,10 +103,10 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
     //------------------------------AD9833历程------------------------------
-    AD9833_Init(&hspi1);
-    AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
-    AD9833_SetPhase(AD9833_REG_PHASE0, 0);
-    AD9833_SetWave(AD9833_OUT_SINUS, AD9833_FSEL0, AD9833_PSEL0);
+    // AD9833_Init(&hspi1);
+    // AD9833_SetFrequency(AD9833_REG_FREQ0, 5000.0);
+    // AD9833_SetPhase(AD9833_REG_PHASE0, 0);
+    // AD9833_SetWave(AD9833_OUT_SINUS, AD9833_FSEL0, AD9833_PSEL0);
 
     //------------------------------w25qxx历程------------------------------
     // W25QXX_Init(&hspi1);
@@ -119,16 +119,34 @@ int main(void)
     // HAL_UART_Transmit(&huart1, rx_buf, sizeof(rx_buf), 0x00FF);
     // HAL_Delay(200);
 
-  /* USER CODE END 2 */
+    //------------------------------测试代码------------------------------
+    uint8_t raw_data = 0xff;
+    uint16_t bit = 0;
+    uint8_t value = 0;
+    UTILS_Status status = UTILS_OK;
 
+  /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
-
+    
     /* USER CODE BEGIN 3 */
-        HAL_Delay(100);
+        if (bit == 0) 
+            value = 0;
+        else
+            value = 0xff;
+
+        status = UTILS_WriteBit_Zone(&raw_data, 7, 0, value);
+
+        if (status == UTILS_OK)
+            printf("data: %d\n", raw_data);
+        else
+            printf("Error\n");
+
+        bit = ~bit;
+        HAL_Delay(500);
   }
   /* USER CODE END 3 */
 }
