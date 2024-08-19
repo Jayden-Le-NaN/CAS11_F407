@@ -8,6 +8,7 @@
 #include "ad9833.h"
 #include "w25qxx.h"
 #include "max5394.h"
+#include "rfmd2081.h"
 
 //----------------------------------------
 // 软件

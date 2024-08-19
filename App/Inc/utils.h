@@ -11,8 +11,9 @@
 #define MCU_FREQUENCY_MHZ       168         // STM32 系统时钟主频
 #define PRINT_BUFFER_SIZE       256         // printf 的缓冲区大小
 
-//------------------------------标准库------------------------------
+//------------------------------标准库(C语言)------------------------------
 #include "stdarg.h"
+#include "stdint.h"
 
 //------------------------------HAL库------------------------------
 #include "stm32f4xx.h"
@@ -22,9 +23,9 @@ typedef enum {
     UTILS_ERROR = 0x01,
 }UTILS_Status;
 
-typedef enum {
-    UTILS_BIT_SET = 0x00,
-    UTILS_BIT_RESET = 0x01,
+typedef enum { 
+    UTILS_BIT_SET = 0x01,
+    UTILS_BIT_RESET = 0x00,
 }UTILS_BitState;
 
 //------------------------------常用工具包(宏函数)------------------------------
@@ -47,6 +48,9 @@ UTILS_Status UTILS_WriteBit_Byte(uint8_t* byte, uint8_t bit_pos, UTILS_BitState 
 UTILS_Status UTILS_WriteBit_Word(uint16_t* word, uint8_t bit_pos, UTILS_BitState bit_state);
 UTILS_Status UTILS_WriteBit_Zone_Byte(uint8_t* byte, uint8_t msb, uint8_t lsb, uint8_t value);
 UTILS_Status UTILS_WriteBit_Zone_Word(uint16_t* word, uint8_t msb, uint8_t lsb, uint16_t value);
+
+int32_t UTILS_Ceil(double data);
+int32_t UTILS_Log2(uint32_t value);
 
 
 void printf(const char *format, ...);

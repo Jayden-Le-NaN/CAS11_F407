@@ -119,12 +119,11 @@ int main(void)
     // HAL_UART_Transmit(&huart1, rx_buf, sizeof(rx_buf), 0x00FF);
     // HAL_Delay(200);
 
+    //------------------------------RFMD2081历程------------------------------
+    RFMD2081_Init();
     //------------------------------测试代码------------------------------
-    uint8_t raw_data = 0xff;
-    uint16_t bit = 0;
-    uint8_t value = 0;
-    UTILS_Status status = UTILS_OK;
 
+    uint16_t data = 0;
   /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -133,20 +132,13 @@ int main(void)
     /* USER CODE END WHILE */
     
     /* USER CODE BEGIN 3 */
-        if (bit == 0) 
-            value = 0;
-        else
-            value = 0xff;
-
-        status = UTILS_WriteBit_Zone(&raw_data, 7, 0, value);
-
-        if (status == UTILS_OK)
-            printf("data: %d\n", raw_data);
-        else
-            printf("Error\n");
-
-        bit = ~bit;
-        HAL_Delay(500);
+    // RFMD2081_Write(RFMD2081_REG_LF, RFMD2081_REG_DEF_VAL_LF);
+    // RFMD2081_Write(RFMD2081_REG_LF, RFMD2081_REG_DEF_VAL_LF);
+    // data = RFMD2081_Read(RFMD2081_REG_XO);
+    // GPIO_PinState state = HAL_GPIO_ReadPin(GPIOF, GPIO_PIN_12);
+    int16_t data = UTILS_Log2(17);
+    printf("%d\n", data);
+    HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }

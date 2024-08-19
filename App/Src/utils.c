@@ -164,3 +164,26 @@ UTILS_Status UTILS_WriteBit_Zone_Word(uint16_t* word, uint8_t msb, uint8_t lsb, 
     } while(0);
     return status;
 }
+
+/*
+ * @brief               向上取整
+ * @param data          需要取整的函数
+ * @return              取整结果
+ */
+int32_t UTILS_Ceil(double data) {
+    if (data < 0)
+        return (int32_t)data;
+
+    int32_t int_part = (int32_t)data;
+    if (data > int_part)
+        return (int_part + 1);
+    return int_part;
+}
+
+int32_t UTILS_Log2(uint32_t value) {
+    if (value == 0)
+        return - 1;
+    return 31 - __builtin_clz(value);
+}
+
+

@@ -3,28 +3,41 @@
 
 /*
  * @create time : 2024.07.21
- * @author      : Jayden Le
+ * @author      : Chosifew & JaydenLe
  * @email       : jayden_nan@qq.com
  */
 
 #include "utils.h"
+
 //------------------------------通信模式定义------------------------------
-#define RFMD2081_THREE_WIRE_BUS     (1)                 // 你需要选择一种通信方式,且只能选择一种
-#define RFMD2081_FOUR_WIRE_BUS      (0)
+#define RFMD2081_THREE_WIRE_BUS                 (1)                 // 你需要选择一种通信方式,且只能选择一种
+#define RFMD2081_FOUR_WIRE_BUS                  (0)
+
+//------------------------------频率设置------------------------------
+#define RFMD2081_CLK_FREQUENCY                  (100000)            // 通信频率设置, 单位Hz, 频率最大值为500kHz(延时函数限制,理论上是20MHz)
+#define RFMD2081_REF_FREQUENCY                  (25)                // 参考频率(即晶振频率)设置, 单位MHz
+#define RFMD2081_VCO_MAX_FREQUENCY              (5600)              // VCO的最大频率,单位为MHz
+
+//------------------------------寄存器值设置(启动时候用)------------------------------
+#define RFMD2081_SET_CT_MIN                     (0)                 // 自动粗调的最小值
+#define RFMD2081_SET_CT_MAX                     (127)               // 自动粗调的最大值
+#define RFMD2081_SET_P1_CTV                     (12)                // path 1 VCO 调节目标电压 (换算公式为: )
+#define RFMD2081_SET_P2_CTV                     (12)                // path 2 VCO 调节目标电压
+                                                                    
 
 //------------------------------通信线定义------------------------------
-#define RFMD2081_ENX_GPIO_PIN                   GPIO_PIN_1          // 使能引脚
-#define RFMD2081_ENX_GPIO_TYPE                  GPIOA
+#define RFMD2081_ENX_GPIO_PIN                   GPIO_PIN_7          // 使能引脚
+#define RFMD2081_ENX_GPIO_TYPE                  GPIOD
 
-#define RFMD2081_CLK_GPIO_PIN                   GPIO_PIN_1          // 时钟引脚
-#define RFMD2081_CLK_GPIO_TYPE                  GPIOA
+#define RFMD2081_CLK_GPIO_PIN                   GPIO_PIN_11         // 时钟引脚
+#define RFMD2081_CLK_GPIO_TYPE                  GPIOC
 
 #if RFMD2081_THREE_WIRE_BUS                                         // 三线模式
 
-#define RFMD2081_DATA_GPIO_PIN                  GPIO_PIN_1          // 数据引脚
-#define RFMD2081_DATA_GPIO_TYPE                 GPIOA
+#define RFMD2081_DATA_GPIO_PIN                  GPIO_PIN_2          // 数据引脚
+#define RFMD2081_DATA_GPIO_TYPE                 GPIOD
 
-#elif RFMD2081_FOUR_WIRE_BUS                            // 四线模式
+#elif RFMD2081_FOUR_WIRE_BUS                                        // 四线模式
 
 #define RFMD2081_DI_GPIO_PIN                    GPIO_PIN_1          // 数据入
 #define RFMD2081_DI_GPIO_TYPE                   GPIOA
@@ -41,7 +54,7 @@
 #define RFMD2081_REG_VCO_CTRL                   0x03
 #define RFMD2081_REG_CT_CAL1                    0x04
 #define RFMD2081_REG_CT_CAL2                    0x05
-#define RFMD2081_REG_PLL_CLA1                   0x06
+#define RFMD2081_REG_PLL_CAL1                   0x06
 #define RFMD2081_REG_PLL_CAL2                   0x07
 #define RFMD2081_REG_VCO_AUTO                   0x08
 #define RFMD2081_REG_PLL_CTRL                   0x09
@@ -101,7 +114,43 @@
 #define RFMD2081_REG_DEF_VAL_TEST               0x0001
 
 
-//------------------------------外接参数------------------------------
-void RFMD2081_Init(void);
+typedef enum {
+    RFMD2081_DATA_WRITE = 0x00,
+    RFMD2081_DATA_READ = 0x01,
+}RFMD2081_DATA_MODE;
 
+typedef enum {
+    RFMD2081_HARDWARE_CONTROL = 0x00,
+    RFMD2081_SOFTWARE_CONTROL = 0x01,
+}RFMD2081_CONTROL_MODE;
+
+typedef enum {
+    RFMD2081_PLL_1 = 0x00,
+    RFMD2081_PLL_2 = 0x01,
+}RFMD2081_PLLx;
+
+typedef enum {
+    RFMD2081_VCO_AUTO = 0xFF,
+    RFMD2081_VCO_1 = 0x00,
+    RFMD2081_VCO_2 = 0x01,
+    RFMD2081_VCO_3 = 0x02,
+}RFMD2081_VCOx;
+
+
+//------------------------------外接函数------------------------------
+void RFMD2081_Init(void);
+void RFMD2081_Write(uint8_t addr, uint16_t data);
+uint16_t RFMD2081_Read(uint8_t addr);
+
+void RFMD2081_Device_Enable(void);
+void RFMD2081_Device_Disable(void);
+void RFMD2081_Device_Reset(void);
+void RFMD2081_SetUP(RFMD2081_CONTROL_MODE control_mode);
+void RFMD2081_SetAdditionalFeatures(void);
+UTILS_Status RFMD2081_SetFrequency(RFMD2081_PLLx pll_x, double lo_freq);
+void RFMD2081_LoopFilterCal_Enable(void);
+UTILS_Status RFMD2081_OptimizingPhaseNoise(RFMD2081_PLLx pll_x, double lo_freq);
+
+void RFMD2081_SetControlMode(RFMD2081_CONTROL_MODE mode);
+void RFMD2081_PLL_Select(RFMD2081_PLLx pll_x);
 #endif
