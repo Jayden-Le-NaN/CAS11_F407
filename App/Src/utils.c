@@ -11,7 +11,7 @@ void printf(const char *format, ...)
     vsnprintf(buffer, PRINT_BUFFER_SIZE, format, args);
     va_end(args);
 
-    HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart1, (uint8_t*)buffer, sizeof(buffer), HAL_MAX_DELAY);
 }
 
 /*

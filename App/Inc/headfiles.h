@@ -9,6 +9,7 @@
 #include "w25qxx.h"
 #include "max5394.h"
 #include "rfmd2081.h"
+#include "pm004mnia.h"
 
 //----------------------------------------
 // 软件

@@ -21,12 +21,19 @@
 typedef enum {
     UTILS_OK = 0x00,
     UTILS_ERROR = 0x01,
+    UTILS_WORKING = 0x02
 }UTILS_Status;
 
 typedef enum { 
     UTILS_BIT_SET = 0x01,
     UTILS_BIT_RESET = 0x00,
 }UTILS_BitState;
+
+typedef enum {
+    UTILS_LOOP  = 0x00,
+    UTILS_IT    = 0x01,
+    UTILS_DMA   = 0x02,
+}UTILS_CommunicationMode;
 
 //------------------------------常用工具包(宏函数)------------------------------
 #define UTILS_WriteBit(data, bit_pos, bit_state) \

@@ -46,6 +46,7 @@ DMA_HandleTypeDef hdma_spi1_tx;
 DMA_HandleTypeDef hdma_spi1_rx;
 
 UART_HandleTypeDef huart1;
+PM004MNIA_Info_Struct pm004mnia_obj;
 
 /* USER CODE BEGIN PV */
 
@@ -64,6 +65,9 @@ static void MX_SPI2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef *hspi) {
+    PM004MNIA_Transmit_IRQ_Handler(&pm004mnia_obj, hspi);
+}
 
 /* USER CODE END 0 */
 
@@ -120,10 +124,14 @@ int main(void)
     // HAL_Delay(200);
 
     //------------------------------RFMD2081历程------------------------------
-    RFMD2081_Init();
+    // RFMD2081_Init();
+
+    //------------------------------PM004MNIA历程------------------------------
+    PM004MNIA_Init(&pm004mnia_obj, &hspi1, GPIO_PIN_6, GPIOC, UTILS_DMA);
+
     //------------------------------测试代码------------------------------
 
-    uint16_t data = 0;
+    // uint16_t data = 0;
   /* USER CODE END 2 */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -136,9 +144,10 @@ int main(void)
     // RFMD2081_Write(RFMD2081_REG_LF, RFMD2081_REG_DEF_VAL_LF);
     // data = RFMD2081_Read(RFMD2081_REG_XO);
     // GPIO_PinState state = HAL_GPIO_ReadPin(GPIOF, GPIO_PIN_12);
-    int16_t data = UTILS_Log2(17);
-    printf("%d\n", data);
-    HAL_Delay(100);
+    // int16_t data = UTILS_Log2(17);
+    // printf("%d\n", data);
+    // PM004MNIA_Reset(&pm004mnia_obj);
+    HAL_Delay(10);
   }
   /* USER CODE END 3 */
 }
