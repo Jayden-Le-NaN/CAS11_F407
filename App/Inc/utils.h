@@ -21,7 +21,8 @@
 typedef enum {
     UTILS_OK = 0x00,
     UTILS_ERROR = 0x01,
-    UTILS_WORKING = 0x02
+    UTILS_WORKING = 0x02,
+    UTILS_BUSY  = 0x03,
 }UTILS_Status;
 
 typedef enum { 

@@ -19,7 +19,7 @@
 typedef enum {
     PM004MNIA_Idle                          = 0x00,             // 空闲状态
     PM004MNIA_Transmiting                   = 0x01,             // 正在传输状态
-    PM004MNIA_Receiving                     = 0x03,             // 正在接收状态
+    PM004MNIA_Receiving                     = 0x02,             // 正在接收状态
 }PM004MNIA_FSM;
 
 typedef enum {
@@ -58,5 +58,13 @@ void PM004MNIA_Receive_IRQ_Handler(PM004MNIA_Info_Struct* pm004mnia_obj, SPI_Han
 
 
 UTILS_Status PM004MNIA_Reset(PM004MNIA_Info_Struct* pm004mnia_obj);
+UTILS_Status PM004MNIA_WakeUP(PM004MNIA_Info_Struct* pm004mnia_obj);
+uint16_t PM004MNIA_GetData_Register(PM004MNIA_Info_Struct* pm004mnia_obj);
+uint16_t PM004MNIA_GetData(PM004MNIA_Info_Struct* pm004mnia_obj);
+UTILS_Status PM004MNIA_Read(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr, PM004MNIA_MEM_TYPE mem_type);
+UTILS_Status PM004MNIA_Write_Register(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr, uint8_t data);
+UTILS_Status PM004MNIA_Write(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr, uint16_t data);
+UTILS_Status PM004MNIA_WriteDisable(PM004MNIA_Info_Struct* pm004mnia_obj);
+UTILS_Status PM004MNIA_WriteEnable(PM004MNIA_Info_Struct* pm004mnia_obj);
 void PM004MNIA_Init(PM004MNIA_Info_Struct* pm004mnia_obj, SPI_HandleTypeDef* spi, uint32_t cs_pin, GPIO_TypeDef* cs_pin_type, UTILS_CommunicationMode mode);
 #endif

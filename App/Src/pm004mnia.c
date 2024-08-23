@@ -130,7 +130,6 @@ static UTILS_Status PM004MNIA_Transmit_8bit_Array(PM004MNIA_Info_Struct* pm004mn
     else
         status = UTILS_ERROR;
     return status;
-
 }
 
 /*
@@ -212,6 +211,13 @@ static UTILS_Status PM004MNIA_Receive_Data_Register(PM004MNIA_Info_Struct* pm004
  * @note                如果使用DMA/IT模式进行数据传输的话,最好将本函数放在主循环中执行
  */
 UTILS_Status PM004MNIA_Reset(PM004MNIA_Info_Struct* pm004mnia_obj) {
+    pm004mnia_obj->_fsm_state_receive = PM004MNIA_Idle;
+    pm004mnia_obj->_fsm_state_transmit = PM004MNIA_Idle;
+    pm004mnia_obj->_fsm_state_read = PM004MNIA_READ_Idle;
+    pm004mnia_obj->_data_read_result = 0;
+    pm004mnia_obj->_register_read_result = 0;
+    pm004mnia_obj->_data_read_addr = 0xFFFFFFFF;
+
     uint8_t command[2];
     command[0] = PM004MNIA_CMD_RESET_ENABLE;
     command[1] = PM004MNIA_CMD_RESET;
@@ -314,6 +320,8 @@ UTILS_Status PM004MNIA_Read(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr,
             if (PM004MNIA_Transmit_8bit_Array(pm004mnia_obj, packet, 4) == UTILS_OK) {
                 pm004mnia_obj->_fsm_state_read = PM004MNIA_READ_ADDR_Transmiting;
             }
+            else 
+                status = UTILS_ERROR;
         }
 
         if (pm004mnia_obj->_fsm_state_read == PM004MNIA_READ_ADDR_Transmit_Finish) {
@@ -324,10 +332,14 @@ UTILS_Status PM004MNIA_Read(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr,
                 if (mem_type == PM004MNIA_Memory) {
                     if (PM004MNIA_Receive_Data(pm004mnia_obj) == UTILS_OK) 
                         pm004mnia_obj->_fsm_state_read = PM004MNIA_READ_Receiving;
+                    else 
+                        status = UTILS_ERROR;
                 }
                 else if (mem_type == PM004MNIA_Register) {
                     if (PM004MNIA_Receive_Data_Register(pm004mnia_obj) == UTILS_OK) 
                         pm004mnia_obj->_fsm_state_read = PM004MNIA_READ_Receiving;
+                    else 
+                        status = UTILS_ERROR;
                 }
             }
         }
@@ -348,11 +360,18 @@ UTILS_Status PM004MNIA_Read(PM004MNIA_Info_Struct* pm004mnia_obj, uint32_t addr,
         packet[0] = command;                            // 装载指令
         for (uint8_t i = 1; i < 4; ++i)                 // 装载地址
             packet[i] = (uint8_t)(addr >> (24 - i * 8) & 0xFF);
-        PM004MNIA_Transmit_8bit_Array(pm004mnia_obj, packet, 4);
-        if (mem_type == PM004MNIA_Memory)
-            PM004MNIA_Receive_Data(pm004mnia_obj);
-        else if (mem_type == PM004MNIA_Register)
-            PM004MNIA_Receive_Data_Register(pm004mnia_obj);
+        if (PM004MNIA_Transmit_8bit_Array(pm004mnia_obj, packet, 4) != UTILS_OK)
+            return UTILS_ERROR;
+
+        if (mem_type == PM004MNIA_Memory) {
+            if (PM004MNIA_Receive_Data(pm004mnia_obj) != UTILS_OK)
+                return UTILS_ERROR;
+        }
+        else if (mem_type == PM004MNIA_Register) {
+            if (PM004MNIA_Receive_Data_Register(pm004mnia_obj) != UTILS_OK)
+                return UTILS_ERROR;
+        }
+
         status = UTILS_OK;
     }
     return status;
@@ -422,7 +441,7 @@ void PM004MNIA_Init(PM004MNIA_Info_Struct* pm004mnia_obj, SPI_HandleTypeDef* spi
     pm004mnia_obj->_data_read_result = 0;
     pm004mnia_obj->_register_read_result = 0;
     pm004mnia_obj->_data_read_addr = 0xFFFFFFFF;
-    //------------------------------配置cs引脚------------------------------
+    //------------------------------配置CS引脚------------------------------
     UTILS_RCC_GPIO_Enable(pm004mnia_obj->cs_pin_type);
     GPIO_InitTypeDef GPIO_InitStruct = {0};
     HAL_GPIO_WritePin(pm004mnia_obj->cs_pin_type, pm004mnia_obj->cs_pin, GPIO_PIN_SET);
